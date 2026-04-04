@@ -56,4 +56,4 @@ Set these in your Space settings:
 
 ## Build Status
 
-This environment is ready for OpenEnv hackathon submission.
+Updated package name to fix dependency conflicts. Ready for OpenEnv hackathon submission.
