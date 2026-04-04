@@ -8,8 +8,11 @@ WORKDIR /app
 ARG OPENENV_VERSION=0.1.0
 RUN pip install --upgrade pip
 
-# Install dependencies with explicit version to avoid cache conflicts
-RUN pip install --no-cache-dir "openenv-core==${OPENENV_VERSION}" fastapi>=0.115.0 uvicorn>=0.24.0 sqlalchemy aiosqlite
+# Install core dependencies first to ensure proper resolution
+RUN pip install --no-cache-dir "openenv-core==${OPENENV_VERSION}"
+
+# Then install remaining dependencies
+RUN pip install --no-cache-dir "fastapi>=0.115.0" "uvicorn>=0.24.0" "sqlalchemy" "aiosqlite"
 
 # Copy the entire support_ticket_env source into the container
 COPY support_ticket_env/ ./
