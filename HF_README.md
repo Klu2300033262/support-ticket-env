@@ -45,11 +45,12 @@ This environment simulates a real-world customer support ticket triage system wh
 
 The environment follows the OpenEnv specification with typed models for Action, Observation, and State.
 
-Visit `/docs` for interactive API documentation.
+Visit `/docs` for the interactive API documentation.
 
 ## Environment Variables
 
 Set these in your Space settings:
-- `API_BASE_URL=http://localhost:7860`
+- `API_BASE_URL=http://localhost:8000`
 - `MODEL_NAME=gpt-4o`
 - `HF_TOKEN=your_hf_token`
+- `OPENAI_API_KEY=your_openai_api_key` (optional for testing)
