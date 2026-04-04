@@ -7,9 +7,10 @@ WORKDIR /app
 # Ensure latest pip
 RUN pip install --upgrade pip
 
-# Force cache invalidation with multi-stage approach
-COPY support_ticket_env/server/requirements.txt requirements-temp.txt
-RUN pip install --no-cache-dir -r requirements-temp.txt
+# Force cache invalidation with timestamp and checksum
+ARG BUILD_DATE=2026-04-04-17-30-00
+ADD support_ticket_env/server/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Copy the entire support_ticket_env source into the container
 COPY support_ticket_env/ ./
