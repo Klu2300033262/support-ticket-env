@@ -4,13 +4,12 @@ FROM python:3.11-slim
 # Set the working directory
 WORKDIR /app
 
-# Ensure latest pip
+# Force specific OpenEnv version and break all caching
+ARG OPENENV_VERSION=0.1.0
 RUN pip install --upgrade pip
 
-# Force cache invalidation with timestamp and checksum
-ARG BUILD_DATE=2026-04-04-17-30-00
-ADD support_ticket_env/server/requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+# Install dependencies with explicit version to avoid cache conflicts
+RUN pip install --no-cache-dir "openenv-core==${OPENENV_VERSION}" fastapi>=0.115.0 uvicorn>=0.24.0 sqlalchemy aiosqlite
 
 # Copy the entire support_ticket_env source into the container
 COPY support_ticket_env/ ./
