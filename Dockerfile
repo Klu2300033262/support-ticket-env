@@ -7,6 +7,9 @@ WORKDIR /app
 # Ensure latest pip
 RUN pip install --upgrade pip
 
+# Add cache busting timestamp
+ARG BUILD_DATE=2026-04-04
+
 # Copy requirements and install dependencies
 COPY support_ticket_env/server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
