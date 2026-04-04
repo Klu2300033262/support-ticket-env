@@ -4,20 +4,13 @@ FROM python:3.11-slim
 # Set the working directory
 WORKDIR /app
 
-# Force specific OpenEnv version and break all caching
-ARG OPENENV_VERSION=0.1.0
-RUN pip install --upgrade pip
+# Ensure latest pip and clean cache
+RUN pip install --upgrade pip && rm -rf /root/.cache/pip
 
-# Install core dependencies first to ensure proper resolution
-RUN pip install --no-cache-dir "openenv-core==${OPENENV_VERSION}"
-
-# Then install remaining dependencies
-RUN pip install --no-cache-dir "fastapi>=0.115.0" "uvicorn>=0.24.0" "sqlalchemy" "aiosqlite"
-
-# Copy the entire support_ticket_env source into the container
+# Copy source first to ensure fresh context
 COPY support_ticket_env/ ./
 
-# Install the package in development mode
+# Install the package first (this installs dependencies)
 RUN pip install -e .
 
 # Expose port 7860 (required by HF Spaces)
