@@ -53,3 +53,7 @@ Set these in your Space settings:
 - `API_BASE_URL=http://localhost:7860`
 - `MODEL_NAME=gpt-4o`
 - `HF_TOKEN=your_hf_token`
+
+## Build Status
+
+This environment is ready for OpenEnv hackathon submission.
