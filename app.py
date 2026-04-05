@@ -1,7 +1,10 @@
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import os
+import json
+from datetime import datetime
+import random
 
 app = FastAPI(title="Support Ticket Environment")
 
@@ -10,12 +13,39 @@ global_state = {
     "episode_id": "demo-123",
     "step_count": 0,
     "conversation_history": [],
-    "last_ticket": None
+    "last_ticket": None,
+    "tickets": []
 }
+
+# Create static directory if it doesn't exist
+if not os.path.exists("static"):
+    os.makedirs("static")
+
+# Copy frontend files to static directory
+def setup_static_files():
+    import shutil
+    frontend_files = {
+        "index.html": "index.html",
+        "style.css": "style.css", 
+        "script.js": "script.js"
+    }
+    
+    for dest_file, src_file in frontend_files.items():
+        if os.path.exists(src_file) and not os.path.exists(f"static/{dest_file}"):
+            shutil.copy2(src_file, f"static/{dest_file}")
+
+# Setup static files on startup
+setup_static_files()
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # API endpoints
 @app.get("/")
 def root():
+    # Serve the main frontend
+    if os.path.exists("static/index.html"):
+        return FileResponse("static/index.html")
     return {"message": "Support Ticket Environment", "status": "running"}
 
 @app.get("/health")
@@ -26,173 +56,106 @@ def health():
 def reset():
     global global_state
     global_state = {
-        "episode_id": "demo-123",
+        "episode_id": f"episode-{datetime.now().strftime('%Y%m%d%H%M%S')}",
         "step_count": 0,
         "conversation_history": [],
-        "last_ticket": None
+        "last_ticket": None,
+        "tickets": []
     }
-    return {"message": "Environment reset", "done": False}
+    return {"message": "Environment reset", "done": False, "episode_id": global_state["episode_id"]}
 
 @app.get("/state")
 def state():
     return global_state
 
-@app.get("/step")
+@app.post("/step")
 def step():
     global_state["step_count"] += 1
+    
+    # Simulate ticket processing
+    categories = ["billing", "technical", "account", "general"]
+    priorities = ["high", "medium", "low"]
+    sentiments = ["negative", "neutral", "positive"]
+    
+    ticket_data = {
+        "id": len(global_state["tickets"]) + 1,
+        "message": f"Sample ticket #{global_state['step_count']}",
+        "category": random.choice(categories),
+        "priority": random.choice(priorities),
+        "sentiment": random.choice(sentiments),
+        "timestamp": datetime.now().isoformat(),
+        "status": "processed"
+    }
+    
+    global_state["tickets"].append(ticket_data)
+    global_state["last_ticket"] = ticket_data
+    
     return {
         "observation": {
             "message": "Step processed successfully",
-            "category": "billing",
-            "priority": "medium",
-            "sentiment": "neutral"
+            "category": ticket_data["category"],
+            "priority": ticket_data["priority"],
+            "sentiment": ticket_data["sentiment"]
         },
-        "reward": 0.8,
-        "done": global_state["step_count"] >= 10
+        "reward": round(random.uniform(0.5, 1.0), 2),
+        "done": global_state["step_count"] >= 10,
+        "ticket": ticket_data
     }
 
-# UI Dashboard
-@app.get("/dashboard", response_class=HTMLResponse)
-def dashboard():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Support Ticket Environment Dashboard</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-            .container { max-width: 1200px; margin: 0 auto; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-            .card { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-            .stat-card { background: #4CAF50; color: white; padding: 15px; border-radius: 8px; text-align: center; }
-            .btn { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
-            .btn:hover { background: #1976D2; }
-            .btn-reset { background: #f44336; }
-            .btn-reset:hover { background: #d32f2f; }
-            .response { background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>🎫 Support Ticket Environment Dashboard</h1>
-                <p>OpenEnv Compliant AI Agent Training Environment</p>
-            </div>
-            
-            <div class="stats">
-                <div class="stat-card">
-                    <h3 id="episode-id">Loading...</h3>
-                    <p>Episode ID</p>
-                </div>
-                <div class="stat-card" style="background: #FF9800;">
-                    <h3 id="step-count">0</h3>
-                    <p>Step Count</p>
-                </div>
-                <div class="stat-card" style="background: #9C27B0;">
-                    <h3 id="status">Running</h3>
-                    <p>System Status</p>
-                </div>
-                <div class="stat-card" style="background: #607D8B;">
-                    <h3 id="reward">0.0</h3>
-                    <p>Last Reward</p>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2>🎮 Environment Controls</h2>
-                <button class="btn" onclick="resetEnvironment()">🔄 Reset Environment</button>
-                <button class="btn" onclick="processStep()">⚡ Process Step</button>
-                <button class="btn" onclick="checkHealth()">💚 Health Check</button>
-                <button class="btn" onclick="getState()">📊 Get State</button>
-            </div>
-            
-            <div class="card">
-                <h2>📋 API Responses</h2>
-                <div id="responses"></div>
-            </div>
-            
-            <div class="card">
-                <h2>🔗 API Endpoints</h2>
-                <ul>
-                    <li><strong>GET /</strong> - Main endpoint</li>
-                    <li><strong>GET /health</strong> - Health check</li>
-                    <li><strong>GET /reset</strong> - Reset environment</li>
-                    <li><strong>GET /state</strong> - Get current state</li>
-                    <li><strong>GET /step</strong> - Process step</li>
-                </ul>
-            </div>
-        </div>
+@app.get("/tickets")
+def get_tickets():
+    return {"tickets": global_state["tickets"]}
+
+@app.get("/analytics")
+def get_analytics():
+    if not global_state["tickets"]:
+        return {
+            "total_tickets": 0,
+            "category_distribution": {},
+            "priority_distribution": {},
+            "sentiment_distribution": {},
+            "timeline": []
+        }
+    
+    # Calculate distributions
+    categories = {}
+    priorities = {}
+    sentiments = {}
+    
+    for ticket in global_state["tickets"]:
+        cat = ticket["category"]
+        pri = ticket["priority"] 
+        sen = ticket["sentiment"]
         
-        <script>
-            async function apiCall(endpoint, method = 'GET') {
-                try {
-                    const response = await fetch(endpoint, { method });
-                    const data = await response.json();
-                    return data;
-                } catch (error) {
-                    return { error: error.message };
-                }
-            }
-            
-            async function resetEnvironment() {
-                const data = await apiCall('/reset');
-                addResponse('Reset Environment', data);
-                updateStats();
-            }
-            
-            async function processStep() {
-                const data = await apiCall('/step');
-                addResponse('Process Step', data);
-                updateStats();
-            }
-            
-            async function checkHealth() {
-                const data = await apiCall('/health');
-                addResponse('Health Check', data);
-            }
-            
-            async function getState() {
-                const data = await apiCall('/state');
-                addResponse('Get State', data);
-                updateStats();
-            }
-            
-            async function updateStats() {
-                const state = await apiCall('/state');
-                if (state.episode_id) {
-                    document.getElementById('episode-id').textContent = state.episode_id;
-                    document.getElementById('step-count').textContent = state.step_count;
-                }
-            }
-            
-            function addResponse(title, data) {
-                const responses = document.getElementById('responses');
-                const responseDiv = document.createElement('div');
-                responseDiv.className = 'response';
-                responseDiv.innerHTML = `
-                    <h4>${title}</h4>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
-                `;
-                responses.insertBefore(responseDiv, responses.firstChild);
-                
-                // Keep only last 5 responses
-                while (responses.children.length > 5) {
-                    responses.removeChild(responses.lastChild);
-                }
-            }
-            
-            // Initialize stats on load
-            updateStats();
-        </script>
-    </body>
-    </html>
-    """
+        categories[cat] = categories.get(cat, 0) + 1
+        priorities[pri] = priorities.get(pri, 0) + 1
+        sentiments[sen] = sentiments.get(sen, 0) + 1
+    
+    return {
+        "total_tickets": len(global_state["tickets"]),
+        "category_distribution": categories,
+        "priority_distribution": priorities,
+        "sentiment_distribution": sentiments,
+        "timeline": [
+            {"date": ticket["timestamp"], "count": 1} 
+            for ticket in global_state["tickets"][-10:]
+        ]
+    }
 
 # Catch all routes
 @app.get("/{path:path}")
 def catch_all(path: str):
-    return {"message": f"Route '{path}' working", "path": path}
+    # Try to serve static files first
+    if os.path.exists(f"static/{path}"):
+        return FileResponse(f"static/{path}")
+    
+    # Return API info for unknown routes
+    return {
+        "message": f"Route '{path}' not found",
+        "available_endpoints": [
+            "/", "/health", "/reset", "/state", "/step", "/tickets", "/analytics"
+        ]
+    }
 
 if __name__ == "__main__":
     import uvicorn

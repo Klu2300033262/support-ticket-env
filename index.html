@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Support Ticket System | SaaS Dashboard</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Link External Stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>History</h2>
+                <div class="sidebar-stats">
+                    <span id="ticketCount">0</span> Tickets
+                </div>
+            </div>
+            <div id="ticketList" class="ticket-list">
+                <!-- History items will be injected here -->
+                <div class="empty-state">No tickets yet</div>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <header>
+                <h1><span>⚡</span> AI Support System</h1>
+                <button id="themeBtn" class="theme-toggle">🌙</button>
+            </header>
+
+        <main>
+            <!-- Input Panel -->
+            <section class="card input-section">
+                <h2>New Ticket Analysis</h2>
+                <textarea id="ticketMessage" placeholder="Enter customer message here... (e.g. 'I'm very frustrated, my subscription was charged twice!')"></textarea>
+                <button id="analyzeBtn" class="btn-submit">
+                    <span class="spinner" id="spinner"></span>
+                    <span id="btnText">Submit for Analysis</span>
+                </button>
+            </section>
+
+            <!-- Results Panel (Dynamic) -->
+            <section class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Category</div>
+                    <div id="resCategory" class="result-value">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Priority</div>
+                    <div class="result-value">
+                        <span id="resPriority" class="badge">-</span>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Sentiment</div>
+                    <div id="resSentiment" class="result-value">-</div>
+                </div>
+            </section>
+
+            <!-- Response Panel (Dynamic) -->
+            <section class="response-box card">
+                <div class="response-header">
+                    <span>✨ AI RECOMMENDED RESPONSE</span>
+                    <span id="resEscalationBadge" class="badge-escalation" style="display: none;">⚠️ ESCALATION REQUIRED</span>
+                </div>
+                <div id="resResponse" class="response-content">
+                    Analysis will appear here.
+                </div>
+                <div id="resEscalationReason" class="escalation-reason" style="display: none;">
+                    <!-- Reason placeholder -->
+                </div>
+            </section>
+
+            <!-- Analytics Dashboard Section -->
+            <section class="analytics-container">
+                <div class="analytics-header">
+                    <h2>📊 System Analytics</h2>
+                </div>
+                <div class="analytics-grid">
+                    <div class="chart-card card">
+                        <h3>Category Distribution</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="chart-card card">
+                        <h3>Priority Distribution</h3>
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                    <div class="chart-card card">
+                        <h3>Sentiment Distribution</h3>
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+        </div>
+    </div>
+
+    <!-- Link External Scripts -->
+    <script src="/static/script.js"></script>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+</body>
+</html>
