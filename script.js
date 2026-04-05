@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Switcher Logic
     let currentTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
-    themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+    themeBtn.innerText = '⚡';
 
     themeBtn.addEventListener('click', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
-        themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+        themeBtn.innerText = '⚡';
     });
 
     // --- Analytics & Charts Logic ---

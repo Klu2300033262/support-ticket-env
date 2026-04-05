@@ -12,7 +12,7 @@
     <nav class="navbar">
         <div class="logo">⚡ AI Support</div>
         <div class="nav-right">
-            <button id="themeToggle" class="theme-btn">🌙</button>
+            <button id="themeToggle" class="theme-btn">⚡</button>
             <a href="/ui" class="btn-nav">Launch Dashboard</a>
         </div>
     </nav>
@@ -96,13 +96,13 @@
         let currentTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', currentTheme);
         const themeToggle = document.getElementById('themeToggle');
-        themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+        themeToggle.innerText = '⚡';
 
         themeToggle.addEventListener('click', () => {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', currentTheme);
             localStorage.setItem('theme', currentTheme);
-            themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+            themeToggle.innerText = '⚡';
         });
     </script>
 </body>
