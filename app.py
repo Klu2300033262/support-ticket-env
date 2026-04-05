@@ -27,7 +27,9 @@ def setup_static_files():
     frontend_files = {
         "index.html": "index.html",
         "style.css": "style.css", 
-        "script.js": "script.js"
+        "script.js": "script.js",
+        "landing.html": "landing.html",
+        "landing.css": "landing.css"
     }
     
     for dest_file, src_file in frontend_files.items():
@@ -43,10 +45,17 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # API endpoints
 @app.get("/")
 def root():
-    # Serve the main frontend
+    # Serve the landing page first
+    if os.path.exists("static/landing.html"):
+        return FileResponse("static/landing.html")
+    return {"message": "Support Ticket Environment", "status": "running"}
+
+@app.get("/ui")
+def dashboard():
+    # Serve the main dashboard
     if os.path.exists("static/index.html"):
         return FileResponse("static/index.html")
-    return {"message": "Support Ticket Environment", "status": "running"}
+    return {"message": "Dashboard not found"}
 
 @app.get("/health")
 def health():
@@ -153,7 +162,7 @@ def catch_all(path: str):
     return {
         "message": f"Route '{path}' not found",
         "available_endpoints": [
-            "/", "/health", "/reset", "/state", "/step", "/tickets", "/analytics"
+            "/", "/ui", "/health", "/reset", "/state", "/step", "/tickets", "/analytics"
         ]
     }
 
