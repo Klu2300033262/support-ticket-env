@@ -218,27 +218,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayResults(data) {
+        // Extract observation data from API response
+        const observation = data.observation || data;
+        
         // Map DOM elements
-        document.getElementById('resCategory').innerText = data.category || 'N/A';
+        document.getElementById('resCategory').innerText = observation.category || 'N/A';
         
         const priorityBadge = document.getElementById('resPriority');
-        priorityBadge.innerText = data.priority || 'Medium';
-        priorityBadge.className = 'badge ' + (data.priority ? data.priority.toLowerCase() : 'medium');
+        priorityBadge.innerText = observation.priority || 'Medium';
+        priorityBadge.className = 'badge ' + (observation.priority ? observation.priority.toLowerCase() : 'medium');
 
         const sentimentEl = document.getElementById('resSentiment');
-        sentimentEl.innerText = data.sentiment || 'Neutral';
-        sentimentEl.style.color = getSentimentColor(data.sentiment || 'Neutral');
+        sentimentEl.innerText = observation.sentiment || 'Neutral';
+        sentimentEl.style.color = getSentimentColor(observation.sentiment || 'Neutral');
 
-        document.getElementById('resResponse').innerText = '"' + (data.response || 'No response generated.') + '"';
+        document.getElementById('resResponse').innerText = '"' + (observation.response || 'No response generated.') + '"';
 
         // --- Escalation Logic ---
         const escBadge = document.getElementById('resEscalationBadge');
         const escReason = document.getElementById('resEscalationReason');
 
-        if (data.requires_escalation) {
+        if (observation.requires_escalation) {
             escBadge.style.display = 'flex';
             escReason.style.display = 'block';
-            escReason.innerHTML = `<strong>Escalation Reason:</strong> ${data.escalation_reason || 'Manual review required.'}`;
+            escReason.innerHTML = `<strong>Escalation Reason:</strong> ${observation.escalation_reason || 'Manual review required.'}`;
         } else {
             escBadge.style.display = 'none';
             escReason.style.display = 'none';
