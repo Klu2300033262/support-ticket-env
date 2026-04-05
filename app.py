@@ -87,46 +87,95 @@ def state():
 def step(request: AnalysisRequest):
     global_state["step_count"] += 1
     
-    # Simulate AI analysis
+    # Simulate AI analysis with improved logic
     categories = ["billing", "technical", "account", "general"]
     priorities = ["high", "medium", "low"]
     sentiments = ["negative", "neutral", "positive"]
     
-    # Simple keyword-based analysis
+    # Enhanced keyword-based analysis
     message_lower = request.message.lower()
     
-    # Determine category based on keywords
-    if any(word in message_lower for word in ["bill", "payment", "charge", "cost", "fee"]):
+    # Determine category based on keywords (more comprehensive)
+    billing_keywords = ["bill", "payment", "charge", "cost", "fee", "subscription", "invoice", "refund", "price", "charged"]
+    technical_keywords = ["error", "bug", "broken", "crash", "issue", "down", "upload", "login", "password", "access", "technical"]
+    account_keywords = ["account", "profile", "settings", "user", "registration", "signup"]
+    
+    if any(word in message_lower for word in billing_keywords):
         category = "billing"
-    elif any(word in message_lower for word in ["error", "bug", "broken", "crash", "issue"]):
+    elif any(word in message_lower for word in technical_keywords):
         category = "technical"
-    elif any(word in message_lower for word in ["account", "login", "password", "profile"]):
+    elif any(word in message_lower for word in account_keywords):
         category = "account"
     else:
         category = "general"
     
-    # Determine priority based on urgency
-    if any(word in message_lower for word in ["urgent", "emergency", "critical", "immediate"]):
+    # Enhanced priority detection
+    high_priority_keywords = ["urgent", "emergency", "critical", "immediate", "asap", "broken", "crash", "down", "cannot", "unable", "stuck"]
+    medium_priority_keywords = ["please", "help", "assist", "support", "need", "issue", "problem"]
+    
+    if any(word in message_lower for word in high_priority_keywords):
         priority = "high"
-    elif any(word in message_lower for word in ["please", "help", "assist"]):
+    elif any(word in message_lower for word in medium_priority_keywords):
         priority = "medium"
     else:
         priority = "low"
     
-    # Determine sentiment
-    if any(word in message_lower for word in ["angry", "frustrated", "terrible", "awful", "hate"]):
+    # Enhanced sentiment analysis
+    negative_keywords = ["angry", "frustrated", "terrible", "awful", "hate", "worst", "unacceptable", "disappointed", "annoyed", "upset", "mad", "furious"]
+    positive_keywords = ["happy", "great", "excellent", "love", "thank", "awesome", "perfect", "satisfied", "pleased", "wonderful"]
+    
+    negative_count = sum(1 for word in negative_keywords if word in message_lower)
+    positive_count = sum(1 for word in positive_keywords if word in message_lower)
+    
+    if negative_count > positive_count:
         sentiment = "negative"
-    elif any(word in message_lower for word in ["happy", "great", "excellent", "love", "thank"]):
+    elif positive_count > negative_count:
         sentiment = "positive"
     else:
         sentiment = "neutral"
     
-    # Generate response
-    responses = [
-        f"Thank you for contacting support. I've analyzed your {category} issue and will help resolve it.",
-        f"I understand your concern about the {category} matter. Let me assist you with this {priority} priority issue.",
-        f"Your {category} ticket has been processed. Our team will address this {sentiment} feedback accordingly."
-    ]
+    # Enhanced escalation logic
+    requires_escalation = False
+    escalation_reason = None
+    
+    # Escalate for high priority + negative sentiment
+    if priority == "high" and sentiment == "negative":
+        requires_escalation = True
+        escalation_reason = "High priority negative sentiment requires immediate attention"
+    # Escalate for critical technical issues
+    elif category == "technical" and priority == "high":
+        requires_escalation = True
+        escalation_reason = "Critical technical issue requires escalation"
+    # Escalate for billing disputes
+    elif category == "billing" and any(word in message_lower for word in ["dispute", "wrong", "double", "overcharge", "refund"]):
+        requires_escalation = True
+        escalation_reason = "Billing dispute requires review"
+    
+    # Generate contextual responses
+    responses = {
+        "billing": [
+            f"Thank you for contacting support regarding your {priority} priority billing concern. I've escalated this to our billing team for immediate review.",
+            f"I understand your billing issue. Our team will investigate this {priority} priority matter and get back to you shortly.",
+            f"Your billing concern has been logged. We'll address this {priority} priority issue with the urgency it requires."
+        ],
+        "technical": [
+            f"I apologize for the technical difficulties. Your {priority} priority issue has been escalated to our technical support team.",
+            f"Our technical team is aware of this {priority} priority issue and is working to resolve it as quickly as possible.",
+            f"I understand the frustration with this technical problem. We're treating this as a {priority} priority issue."
+        ],
+        "account": [
+            f"Your account access issue has been logged. We'll address this {priority} priority concern promptly.",
+            f"I understand the account access problem. Our team will help resolve this {priority} priority issue.",
+            f"Thank you for reporting the account issue. We're treating this as a {priority} priority matter."
+        ],
+        "general": [
+            f"Thank you for contacting support. We'll address your {priority} priority inquiry promptly.",
+            f"I've received your message and will ensure this {priority} priority concern gets proper attention.",
+            f"Your support request has been logged. We'll handle this {priority} priority issue accordingly."
+        ]
+    }
+    
+    response_text = random.choice(responses.get(category, responses["general"]))
     
     ticket_data = {
         "ticket_id": len(global_state["tickets"]) + 1,
@@ -134,9 +183,9 @@ def step(request: AnalysisRequest):
         "category": category,
         "priority": priority,
         "sentiment": sentiment,
-        "response": random.choice(responses),
-        "requires_escalation": priority == "high" and sentiment == "negative",
-        "escalation_reason": "High priority negative sentiment" if priority == "high" and sentiment == "negative" else None,
+        "response": response_text,
+        "requires_escalation": requires_escalation,
+        "escalation_reason": escalation_reason,
         "timestamp": datetime.now().isoformat(),
         "status": "processed",
         "user_id": request.user_id
@@ -146,7 +195,9 @@ def step(request: AnalysisRequest):
     global_state["last_ticket"] = ticket_data
     
     # Calculate reward based on analysis quality
-    reward = 0.8 if category != "general" else 0.6
+    reward = 0.9 if category != "general" else 0.7
+    if requires_escalation:
+        reward += 0.1  # Bonus for proper escalation detection
     
     return {
         "observation": ticket_data,
