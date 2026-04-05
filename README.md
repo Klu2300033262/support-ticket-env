@@ -1,6 +1,5 @@
 ---
 title: Support Ticket Environment
-<<<<<<< HEAD
 emoji: 🎫
 colorFrom: blue
 colorTo: purple
@@ -13,16 +12,10 @@ tags:
 - customer-service
 - ai-agents
 license: mit
-=======
-sdk: docker
-dockerfile: Dockerfile
-app_port: 7860
->>>>>>> b4af13b0b6c4f25a0435dbc41c23260259011f38
 ---
 
 # Support Ticket Environment
 
-<<<<<<< HEAD
 An OpenEnv environment for AI agent training on customer support ticket triage tasks.
 
 ## Environment Description
@@ -61,19 +54,3 @@ Set these in your Space settings:
 - `MODEL_NAME=gpt-4o`
 - `HF_TOKEN=your_hf_token`
 - `OPENAI_API_KEY=your_openai_api_key` (optional for testing)
-=======
-OpenEnv compliant environment for AI agent training.
-
-## API Endpoints
-
-- `/` - Main endpoint
-- `/health` - Health check
-- `/debug` - Debug information
-- `/reset` - Reset environment
-- `/state` - Get state
-- `/step` - Process step
-
-## Usage
-
-Visit the main URL to see all available endpoints.
->>>>>>> b4af13b0b6c4f25a0435dbc41c23260259011f38
