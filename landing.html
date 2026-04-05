@@ -1,20 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Support | Revolutionizing Customer Care</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/landing.css">
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">⚡ AI Support</div>
-        <div class="nav-controls">
-            <div class="theme-controls">
-                <span class="theme-label">Theme</span>
-                <button id="themeBtn" class="theme-toggle">🌙</button>
-            </div>
+        <div class="logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                <path d="M16 8 L16 16 L20 12 M16 16 L12 12 M16 16 L16 24 M12 20 L16 16 L20 20" 
+                      stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            AI Support
+        </div>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-btn">🌙</button>
             <a href="/ui" class="btn-nav">Launch Dashboard</a>
         </div>
     </nav>
@@ -92,32 +103,19 @@
     <footer class="footer">
         <p>&copy; 2026 AI Support Systems. Powered by OpenEnv & OpenAI.</p>
     </footer>
-    
+
     <script>
-        // Theme Switcher Logic for Landing Page
-        let currentTheme = localStorage.getItem('theme') || 'light';
+        // Theme Switcher for Landing Page
+        let currentTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', currentTheme);
-        updateThemeButton();
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
 
-        function updateThemeButton() {
-            const themeBtn = document.getElementById('themeBtn');
-            const themeIcons = {
-                'light': '🌙',
-                'dark': '🌌',
-                'space': '🚀'
-            };
-            themeBtn.innerText = themeIcons[currentTheme];
-        }
-
-        document.getElementById('themeBtn').addEventListener('click', () => {
-            // Cycle through themes: light -> dark -> space -> light
-            const themes = ['light', 'dark', 'space'];
-            const currentIndex = themes.indexOf(currentTheme);
-            currentTheme = themes[(currentIndex + 1) % themes.length];
-            
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', currentTheme);
             localStorage.setItem('theme', currentTheme);
-            updateThemeButton();
+            themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
         });
     </script>
 </body>

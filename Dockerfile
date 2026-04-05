@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Use Python 3.11 slim as the base image
 FROM python:3.11-slim
 
@@ -39,3 +40,17 @@ ENV PYTHONPATH="/app"
 
 # Run the FastAPI server using uvicorn on port 7860
 CMD ["uvicorn", "support_ticket_env.server.app:app", "--host", "0.0.0.0", "--port", "7860"]
+=======
+FROM python:3.10
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 7860
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+>>>>>>> b4af13b0b6c4f25a0435dbc41c23260259011f38

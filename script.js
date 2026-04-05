@@ -10,36 +10,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let tickets = []; // Global store for tickets
 
     // Theme Switcher Logic
-    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
-    updateThemeButton();
-
-    function updateThemeButton() {
-        const themeIcons = {
-            'light': '🌙',
-            'dark': '�',
-            'space': '🚀'
-        };
-        themeBtn.innerText = themeIcons[currentTheme];
-    }
+    themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
 
     themeBtn.addEventListener('click', () => {
-        // Cycle through themes: light -> dark -> space -> light
-        const themes = ['light', 'dark', 'space'];
-        const currentIndex = themes.indexOf(currentTheme);
-        currentTheme = themes[(currentIndex + 1) % themes.length];
-        
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
-        updateThemeButton();
-        
-        // Show toast notification for theme change
-        const themeNames = {
-            'light': 'Light Theme',
-            'dark': 'Dark Theme', 
-            'space': 'Space Theme'
-        };
-        showToast(`Switched to ${themeNames[currentTheme]}`, 'info');
+        themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
     });
 
     // --- Analytics & Charts Logic ---
@@ -111,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function updateAnalytics() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/analytics');
+            const response = await fetch('/analytics');
             if (!response.ok) throw new Error('Failed to fetch analytics');
             const data = await response.json();
 
@@ -139,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchHistory() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/tickets');
+            const response = await fetch('/tickets');
             if (!response.ok) throw new Error('Failed to fetch history');
             const data = await response.json();
             tickets = data.tickets || [];
@@ -209,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze-ticket', {
+            const response = await fetch('/step', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -239,27 +218,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayResults(data) {
+        // Extract observation data from API response
+        const observation = data.observation || data;
+        
         // Map DOM elements
-        document.getElementById('resCategory').innerText = data.category || 'N/A';
+        document.getElementById('resCategory').innerText = observation.category || 'N/A';
         
         const priorityBadge = document.getElementById('resPriority');
-        priorityBadge.innerText = data.priority || 'Medium';
-        priorityBadge.className = 'badge ' + (data.priority ? data.priority.toLowerCase() : 'medium');
+        priorityBadge.innerText = observation.priority || 'Medium';
+        priorityBadge.className = 'badge ' + (observation.priority ? observation.priority.toLowerCase() : 'medium');
 
         const sentimentEl = document.getElementById('resSentiment');
-        sentimentEl.innerText = data.sentiment || 'Neutral';
-        sentimentEl.style.color = getSentimentColor(data.sentiment || 'Neutral');
+        sentimentEl.innerText = observation.sentiment || 'Neutral';
+        sentimentEl.style.color = getSentimentColor(observation.sentiment || 'Neutral');
 
-        document.getElementById('resResponse').innerText = '"' + (data.response || 'No response generated.') + '"';
+        document.getElementById('resResponse').innerText = '"' + (observation.response || 'No response generated.') + '"';
 
         // --- Escalation Logic ---
         const escBadge = document.getElementById('resEscalationBadge');
         const escReason = document.getElementById('resEscalationReason');
 
-        if (data.requires_escalation) {
+        if (observation.requires_escalation) {
             escBadge.style.display = 'flex';
             escReason.style.display = 'block';
-            escReason.innerHTML = `<strong>Escalation Reason:</strong> ${data.escalation_reason || 'Manual review required.'}`;
+            escReason.innerHTML = `<strong>Escalation Reason:</strong> ${observation.escalation_reason || 'Manual review required.'}`;
         } else {
             escBadge.style.display = 'none';
             escReason.style.display = 'none';
