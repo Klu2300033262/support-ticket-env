@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Support | Revolutionizing Customer Care</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/landing.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">⚡ AI Support</div>
-        <a href="/ui" class="btn-nav">Launch Dashboard</a>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-btn">🌙</button>
+            <a href="/ui" class="btn-nav">Launch Dashboard</a>
+        </div>
     </nav>
 
     <header class="hero">
@@ -86,5 +90,20 @@
     <footer class="footer">
         <p>&copy; 2026 AI Support Systems. Powered by OpenEnv & OpenAI.</p>
     </footer>
+
+    <script>
+        // Theme Switcher for Landing Page
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+        });
+    </script>
 </body>
 </html>

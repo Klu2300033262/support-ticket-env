@@ -37,6 +37,28 @@ body {
     font-weight: 800;
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.theme-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text-white);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.theme-btn:hover {
+    background: var(--glass-border);
+    transform: scale(1.05);
+}
+
 .btn-nav {
     text-decoration: none;
     color: var(--text-white);
@@ -263,6 +285,53 @@ body {
     text-align: center;
     border-top: 1px solid var(--glass-border);
     color: var(--text-gray);
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-dark: #ffffff;
+    --accent: #4f46e5;
+    --accent-glow: rgba(79, 70, 229, 0.2);
+    --text-white: #1e293b;
+    --text-gray: #64748b;
+    --glass: rgba(0, 0, 0, 0.02);
+    --glass-border: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+}
+
+[data-theme="light"] .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .feature-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .theme-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--text-white);
+}
+
+[data-theme="light"] .theme-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .btn-nav {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--text-white);
+}
+
+[data-theme="light"] .btn-nav:hover {
+    background: rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 1024px) {

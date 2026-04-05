@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tickets = []; // Global store for tickets
 
     // Theme Switcher Logic
-    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
 
