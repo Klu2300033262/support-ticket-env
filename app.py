@@ -1,12 +1,18 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import os
 import json
 from datetime import datetime
 import random
 
 app = FastAPI(title="Support Ticket Environment")
+
+# Pydantic model for analysis requests
+class AnalysisRequest(BaseModel):
+    message: str
+    user_id: str = "saas_user_1"
 
 # Global state for demonstration
 global_state = {
@@ -78,35 +84,73 @@ def state():
     return global_state
 
 @app.post("/step")
-def step():
+def step(request: AnalysisRequest):
     global_state["step_count"] += 1
     
-    # Simulate ticket processing
+    # Simulate AI analysis
     categories = ["billing", "technical", "account", "general"]
     priorities = ["high", "medium", "low"]
     sentiments = ["negative", "neutral", "positive"]
     
+    # Simple keyword-based analysis
+    message_lower = request.message.lower()
+    
+    # Determine category based on keywords
+    if any(word in message_lower for word in ["bill", "payment", "charge", "cost", "fee"]):
+        category = "billing"
+    elif any(word in message_lower for word in ["error", "bug", "broken", "crash", "issue"]):
+        category = "technical"
+    elif any(word in message_lower for word in ["account", "login", "password", "profile"]):
+        category = "account"
+    else:
+        category = "general"
+    
+    # Determine priority based on urgency
+    if any(word in message_lower for word in ["urgent", "emergency", "critical", "immediate"]):
+        priority = "high"
+    elif any(word in message_lower for word in ["please", "help", "assist"]):
+        priority = "medium"
+    else:
+        priority = "low"
+    
+    # Determine sentiment
+    if any(word in message_lower for word in ["angry", "frustrated", "terrible", "awful", "hate"]):
+        sentiment = "negative"
+    elif any(word in message_lower for word in ["happy", "great", "excellent", "love", "thank"]):
+        sentiment = "positive"
+    else:
+        sentiment = "neutral"
+    
+    # Generate response
+    responses = [
+        f"Thank you for contacting support. I've analyzed your {category} issue and will help resolve it.",
+        f"I understand your concern about the {category} matter. Let me assist you with this {priority} priority issue.",
+        f"Your {category} ticket has been processed. Our team will address this {sentiment} feedback accordingly."
+    ]
+    
     ticket_data = {
-        "id": len(global_state["tickets"]) + 1,
-        "message": f"Sample ticket #{global_state['step_count']}",
-        "category": random.choice(categories),
-        "priority": random.choice(priorities),
-        "sentiment": random.choice(sentiments),
+        "ticket_id": len(global_state["tickets"]) + 1,
+        "message": request.message,
+        "category": category,
+        "priority": priority,
+        "sentiment": sentiment,
+        "response": random.choice(responses),
+        "requires_escalation": priority == "high" and sentiment == "negative",
+        "escalation_reason": "High priority negative sentiment" if priority == "high" and sentiment == "negative" else None,
         "timestamp": datetime.now().isoformat(),
-        "status": "processed"
+        "status": "processed",
+        "user_id": request.user_id
     }
     
     global_state["tickets"].append(ticket_data)
     global_state["last_ticket"] = ticket_data
     
+    # Calculate reward based on analysis quality
+    reward = 0.8 if category != "general" else 0.6
+    
     return {
-        "observation": {
-            "message": "Step processed successfully",
-            "category": ticket_data["category"],
-            "priority": ticket_data["priority"],
-            "sentiment": ticket_data["sentiment"]
-        },
-        "reward": round(random.uniform(0.5, 1.0), 2),
+        "observation": ticket_data,
+        "reward": reward,
         "done": global_state["step_count"] >= 10,
         "ticket": ticket_data
     }

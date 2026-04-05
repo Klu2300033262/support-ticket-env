@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze-ticket', {
+            const response = await fetch('/step', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
