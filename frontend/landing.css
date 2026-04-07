@@ -1,11 +1,25 @@
+/* Dark Theme (Default) */
 :root {
     --bg-dark: #0f172a;
+    --bg-card: rgba(255, 255, 255, 0.03);
     --accent: #6366f1;
     --accent-glow: rgba(99, 102, 241, 0.3);
     --text-white: #f8fafc;
+    --text-primary: #f8fafc;
     --text-gray: #94a3b8;
     --glass: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Light Theme Overrides */
+[data-theme='light'] {
+    --bg-dark: #f8fafc;
+    --bg-card: #ffffff;
+    --text-white: #0f172a;
+    --text-primary: #0f172a;
+    --text-gray: #4b5563;
+    --glass: #ffffff;
+    --glass-border: #e2e8f0;
 }
 
 * {
@@ -13,11 +27,12 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 body {
     background-color: var(--bg-dark);
-    color: var(--text-white);
+    color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
 }
@@ -32,6 +47,24 @@ body {
     z-index: 100;
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.theme-toggle {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .logo {
     font-size: 1.5rem;
     font-weight: 800;
@@ -39,7 +72,7 @@ body {
 
 .btn-nav {
     text-decoration: none;
-    color: var(--text-white);
+    color: var(--text-primary);
     padding: 10px 24px;
     border-radius: 99px;
     border: 1px solid var(--glass-border);

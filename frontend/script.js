@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function updateAnalytics() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/analytics');
+            const response = await fetch('/analytics');
             if (!response.ok) throw new Error('Failed to fetch analytics');
             const data = await response.json();
 
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchHistory() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/tickets');
+            const response = await fetch('/tickets');
             if (!response.ok) throw new Error('Failed to fetch history');
             const data = await response.json();
             tickets = data.tickets || [];
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze-ticket', {
+            const response = await fetch('/analyze-ticket', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
