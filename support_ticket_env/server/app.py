@@ -81,7 +81,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-@app.post("/reset", tags=["OpenEnv"])
+@app.api_route("/reset", methods=["GET", "POST"], tags=["OpenEnv"])
+@app.api_route("/reset/", methods=["GET", "POST"], tags=["OpenEnv"], include_in_schema=False)
 async def reset_environment():
     """
     OpenEnv reset endpoint - initializes a new episode.
@@ -112,6 +113,7 @@ async def reset_environment():
     }
 
 @app.post("/step", response_model=dict, tags=["OpenEnv"])
+@app.post("/step/", response_model=dict, tags=["OpenEnv"], include_in_schema=False)
 async def step_environment(action: SupportTicketAction, db: AsyncSession = Depends(get_db)):
     """
     OpenEnv step endpoint - processes agent action and returns observation/reward.
@@ -174,6 +176,7 @@ async def step_environment(action: SupportTicketAction, db: AsyncSession = Depen
     }
 
 @app.get("/state", tags=["OpenEnv"])
+@app.get("/state/", tags=["OpenEnv"], include_in_schema=False)
 def get_environment_state():
     """
     OpenEnv state endpoint - returns current environment state.
@@ -332,14 +335,21 @@ def read_root():
     if os.path.exists(os.path.join(FRONTEND_DIR, "landing.html")):
         return FileResponse(os.path.join(FRONTEND_DIR, "landing.html"))
     else:
-        return {"message": "Support Ticket Environment API", "docs": "/docs"}
+        return {"message": "Support Ticket Environment API", "status": "running", "docs": "/docs"}
+
+@app.get("/test", tags=["Test"])
+def test_endpoint():
+    """
+    Simple test endpoint to verify API is working.
+    """
+    return {"message": "API is working", "status": "success"}
 
 @app.get("/health", tags=["Health"])
 def health_check():
     """
     Service health check endpoint for monitoring and load balancing.
     """
-    return {"status": "ok", "service": "AI Support Ticket System"}
+    return {"status": "healthy", "service": "AI Support Ticket System"}
 
 @app.get("/ui", tags=["Frontend"])
 def serve_ui():
