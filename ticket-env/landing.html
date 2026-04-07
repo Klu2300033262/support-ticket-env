@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Support | Revolutionizing Customer Care</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/landing.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">⚡ AI Support</div>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-btn">🌙</button>
+            <a href="/ui" class="btn-nav">Launch Dashboard</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Revolutionize Your Customer Support with <span>AI Triage</span></h1>
+            <p>Instantly classify, prioritize, and respond to support tickets using state-of-the-art GPT-4o-mini analysis.</p>
+            <div class="hero-btns">
+                <a href="/ui" class="btn-primary">Get Started Now</a>
+                <a href="#features" class="btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <div class="card-body">
+                    <div class="skeleton line-1"></div>
+                    <div class="skeleton line-2"></div>
+                    <div class="skeleton line-3"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Powerful Features</h2>
+            <p>Everything you need to automate your support workflow.</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">🤖</div>
+                <h3>AI Analysis</h3>
+                <p>Natural language processing to detect sentiment, category, and priority instantly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📈</div>
+                <h3>Real-time Analytics</h3>
+                <p>Visualize distribution trends across all support channels with interactive dashboards.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">💾</div>
+                <h3>Persistent Storage</h3>
+                <p>Built-in SQLAlchemy integration for robust and scalable ticket management.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Submit</h4>
+                <p>Customer sends a ticket via the dashboard or API.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Analyze</h4>
+                <p>AI performs multi-dimensional triage in milliseconds.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Resolve</h4>
+                <p>Receive recommended responses or escalate automatically.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 AI Support Systems. Powered by OpenEnv & OpenAI.</p>
+    </footer>
+
+    <script>
+        // Theme Switcher for Landing Page
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            themeToggle.innerText = currentTheme === 'light' ? '🌙' : '☀️';
+        });
+    </script>
+</body>
+</html>

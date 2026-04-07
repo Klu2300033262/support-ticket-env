@@ -1,0 +1,34 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Test and dev files
+*.db
+test_*.py
+tmp/
+.env
+
+# Git and editor
+.git/
+.gitignore
+.windsurf/
+
+# Docs (not needed in container)
+*.md
+deploy*.sh
+hf_space_config.md
+
+# Lock files (not needed for pip-based build)
+uv.lock

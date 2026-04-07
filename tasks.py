@@ -1,5 +1,5 @@
 from typing import Any, List
-from support_ticket_env.server.graders import BillingGrader, UrgencyGrader, EscalationGrader
+from server.graders import BillingGrader, UrgencyGrader, EscalationGrader
 
 # Task Descriptions for OpenEnv Hackathon Submission
 

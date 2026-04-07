@@ -81,8 +81,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-@app.api_route("/reset", methods=["GET", "POST"], tags=["OpenEnv"])
-@app.api_route("/reset/", methods=["GET", "POST"], tags=["OpenEnv"], include_in_schema=False)
+@app.post("/reset", tags=["OpenEnv"])
 async def reset_environment():
     """
     OpenEnv reset endpoint - initializes a new episode.
@@ -106,14 +105,12 @@ async def reset_environment():
     )
     
     return {
-        "observation": initial_obs.dict(),
+        "state": initial_obs.dict(),
         "reward": 0.0,
-        "done": False,
-        "info": {"episode_id": initial_obs.metadata["episode_id"]}
+        "done": False
     }
 
 @app.post("/step", response_model=dict, tags=["OpenEnv"])
-@app.post("/step/", response_model=dict, tags=["OpenEnv"], include_in_schema=False)
 async def step_environment(action: SupportTicketAction, db: AsyncSession = Depends(get_db)):
     """
     OpenEnv step endpoint - processes agent action and returns observation/reward.
@@ -169,25 +166,27 @@ async def step_environment(action: SupportTicketAction, db: AsyncSession = Depen
     global_state["step_count"] += 1
     
     return {
-        "observation": observation.dict(),
-        "reward": reward,
-        "done": global_state["step_count"] >= 10,  # Episode ends after 10 steps
-        "info": {"step": global_state["step_count"]}
+        "state": observation.dict(),
+        "reward": float(reward),
+        "done": global_state["step_count"] >= 10
     }
 
 @app.get("/state", tags=["OpenEnv"])
-@app.get("/state/", tags=["OpenEnv"], include_in_schema=False)
 def get_environment_state():
     """
     OpenEnv state endpoint - returns current environment state.
     """
     return {
-        "episode_id": str(uuid.uuid4()),
-        "step_count": global_state["step_count"],
-        "conversation_history": global_state["conversation_history"],
-        "last_ticket_category": global_state["last_category"],
-        "last_priority": global_state["last_priority"],
-        "steps_taken": global_state["step_count"]
+        "state": {
+            "episode_id": str(uuid.uuid4()),
+            "step_count": global_state["step_count"],
+            "conversation_history": global_state["conversation_history"],
+            "last_ticket_category": global_state["last_category"],
+            "last_priority": global_state["last_priority"],
+            "steps_taken": global_state["step_count"]
+        },
+        "reward": 0.0,
+        "done": global_state["step_count"] >= 10
     }
 
 @app.post("/analyze-ticket", response_model=SupportTicketObservation, tags=["AI Analysis"])

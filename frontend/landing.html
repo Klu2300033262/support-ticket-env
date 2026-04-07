@@ -10,13 +10,7 @@
 <body>
     <nav class="navbar">
         <div class="logo">⚡ AI Support</div>
-        <div class="nav-controls">
-            <div class="theme-controls">
-                <span class="theme-label">Theme</span>
-                <button id="themeBtn" class="theme-toggle">🌙</button>
-            </div>
-            <a href="/ui" class="btn-nav">Launch Dashboard</a>
-        </div>
+        <a href="/ui" class="btn-nav">Launch Dashboard</a>
     </nav>
 
     <header class="hero">
@@ -92,33 +86,5 @@
     <footer class="footer">
         <p>&copy; 2026 AI Support Systems. Powered by OpenEnv & OpenAI.</p>
     </footer>
-    
-    <script>
-        // Theme Switcher Logic for Landing Page
-        let currentTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        updateThemeButton();
-
-        function updateThemeButton() {
-            const themeBtn = document.getElementById('themeBtn');
-            const themeIcons = {
-                'light': '🌙',
-                'dark': '🌌',
-                'space': '🚀'
-            };
-            themeBtn.innerText = themeIcons[currentTheme];
-        }
-
-        document.getElementById('themeBtn').addEventListener('click', () => {
-            // Cycle through themes: light -> dark -> space -> light
-            const themes = ['light', 'dark', 'space'];
-            const currentIndex = themes.indexOf(currentTheme);
-            currentTheme = themes[(currentIndex + 1) % themes.length];
-            
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            localStorage.setItem('theme', currentTheme);
-            updateThemeButton();
-        });
-    </script>
 </body>
 </html>

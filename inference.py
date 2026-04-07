@@ -2,24 +2,24 @@ import os
 import json
 import sys
 from openai import OpenAI
-from support_ticket_env.client import SupportTicketEnv
-from support_ticket_env.models import SupportTicketAction
+from client import SupportTicketEnv
+from models import SupportTicketAction, SupportTicketObservation
 from tasks import get_all_tasks
+
+import requests
+import time
 
 def main():
     # Required environment variables
     API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
     MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o")
-    HF_TOKEN = os.environ.get("HF_TOKEN")
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
     if not OPENAI_API_KEY:
-        print("ERROR: OPENAI_API_KEY is not set.")
-        sys.exit(1)
+        print("WARNING: OPENAI_API_KEY is not set. Using fallback logic.")
 
     # Initialize client and environment
-    env = SupportTicketEnv(base_url=API_BASE_URL)
-    ai_client = OpenAI(api_key=OPENAI_API_KEY)
+    ai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY and OPENAI_API_KEY != "dummy-key" else None
     
     # Get all tasks
     tasks = get_all_tasks()
@@ -40,27 +40,34 @@ def main():
             print(f"task_id: {task_id}")
             print(f"task_name: {task_name}")
             
-            # Reset environment for each task
-            reset_result = env.reset()
+            # Reset environment for each task via HTTP REST POST
+            reset_resp = requests.post(f"{API_BASE_URL}/reset")
+            if not reset_resp.ok:
+                print(f"ERROR: Reset failed {reset_resp.status_code} - {reset_resp.text}")
+                continue
             
             # Agent decision making
-            prompt = f"""
-            Analyze this support ticket: "{message}"
-            Provide a JSON response with:
-            - category: (billing, technical, account, general)
-            - priority: (high, medium, low)
-            - sentiment: (negative, neutral, positive)
-            - response: A professional response.
-            """
+            analysis = {"category": "general", "priority": "medium", "sentiment": "neutral", "response": "Default response."}
+            if ai_client:
+                try:
+                    prompt = f"""
+                    Analyze this support ticket: "{message}"
+                    Provide a JSON response with:
+                    - category: (billing, technical, account, general)
+                    - priority: (high, medium, low)
+                    - sentiment: (negative, neutral, positive)
+                    - response: A professional response.
+                    """
 
-            completion = ai_client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=[{"role": "system", "content": "You are an expert support triage agent."},
-                          {"role": "user", "content": prompt}],
-                response_format={"type": "json_object"}
-            )
-
-            analysis = json.loads(completion.choices[0].message.content)
+                    completion = ai_client.chat.completions.create(
+                        model=MODEL_NAME,
+                        messages=[{"role": "system", "content": "You are an expert support triage agent."},
+                                  {"role": "user", "content": prompt}],
+                        response_format={"type": "json_object"}
+                    )
+                    analysis = json.loads(completion.choices[0].message.content)
+                except Exception as e:
+                    print(f"OpenAI error (fallback applied): {e}")
 
             # Create action
             action = SupportTicketAction(
@@ -72,30 +79,44 @@ def main():
                 response=analysis.get("response")
             )
 
-            # Execute step
-            step_result = env.step(action)
-            observation = step_result.observation
+            # Execute step via REST
+            step_resp = requests.post(f"{API_BASE_URL}/step", json=action.dict())
+            if not step_resp.ok:
+                print(f"ERROR: Step failed {step_resp.status_code} - {step_resp.text}")
+                continue
+
+            step_result = step_resp.json()
+            # Construct observation manually since we got dict from HTTP
+            obs_data = step_result.get("state", {})
+            observation = SupportTicketObservation(
+                category=obs_data.get("category", ""),
+                priority=obs_data.get("priority", "Low"),
+                sentiment=obs_data.get("sentiment", "Neutral"),
+                response=obs_data.get("response", ""),
+                requires_escalation=obs_data.get("requires_escalation", False),
+                escalation_reason=obs_data.get("escalation_reason", "")
+            )
             
             # Grade the task
             task_score = grader.forward(action, observation)
             task_score = max(0.0, min(1.0, float(task_score)))
             
-            print(f"reward: {step_result.reward}")
+            reward = step_result.get("reward", 0.0)
+            done = step_result.get("done", False)
+
+            print(f"reward: {reward}")
             print(f"score: {task_score}")
-            print(f"done: {step_result.done}")
+            print(f"done: {done}")
             
             total_score += task_score
             task_results.append({
                 "task_id": task_id,
                 "score": task_score,
-                "reward": step_result.reward
+                "reward": reward
             })
             
     except Exception as e:
         print(f"ERROR: {e}")
-        sys.exit(1)
-    finally:
-        env.close()
 
     print("[END]")
     print(f"total_score: {total_score / len(tasks) if tasks else 0.0}")

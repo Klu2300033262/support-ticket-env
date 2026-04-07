@@ -12,34 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Switcher Logic
     let currentTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
-    updateThemeButton();
-
-    function updateThemeButton() {
-        const themeIcons = {
-            'light': '🌙',
-            'dark': '�',
-            'space': '🚀'
-        };
-        themeBtn.innerText = themeIcons[currentTheme];
-    }
+    themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
 
     themeBtn.addEventListener('click', () => {
-        // Cycle through themes: light -> dark -> space -> light
-        const themes = ['light', 'dark', 'space'];
-        const currentIndex = themes.indexOf(currentTheme);
-        currentTheme = themes[(currentIndex + 1) % themes.length];
-        
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
-        updateThemeButton();
-        
-        // Show toast notification for theme change
-        const themeNames = {
-            'light': 'Light Theme',
-            'dark': 'Dark Theme', 
-            'space': 'Space Theme'
-        };
-        showToast(`Switched to ${themeNames[currentTheme]}`, 'info');
+        themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
     });
 
     // --- Analytics & Charts Logic ---
