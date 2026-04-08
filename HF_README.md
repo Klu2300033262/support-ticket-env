@@ -1,11 +1,11 @@
 ---
-title: Support Ticket Environment
+title: ticket-env
 emoji: 🎫
 colorFrom: blue
-colorTo: purple
+colorTo: indigo
 sdk: docker
 dockerfile: Dockerfile
-app_port: 7860
+app_port: 8000
 tags:
 - openenv
 - support-ticket

@@ -10,11 +10,8 @@
 <body>
     <nav class="navbar">
         <div class="logo">⚡ AI Support</div>
-        <div class="nav-controls">
-            <div class="theme-controls">
-                <span class="theme-label">Theme</span>
-                <button id="themeBtn" class="theme-toggle">🌙</button>
-            </div>
+        <div class="nav-right">
+            <button id="themeBtn" class="theme-toggle">🌙</button>
             <a href="/ui" class="btn-nav">Launch Dashboard</a>
         </div>
     </nav>
@@ -92,32 +89,20 @@
     <footer class="footer">
         <p>&copy; 2026 AI Support Systems. Powered by OpenEnv & OpenAI.</p>
     </footer>
-    
+
     <script>
-        // Theme Switcher Logic for Landing Page
-        let currentTheme = localStorage.getItem('theme') || 'light';
+        const themeBtn = document.getElementById('themeBtn');
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // Initial set
         document.documentElement.setAttribute('data-theme', currentTheme);
-        updateThemeButton();
+        themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
 
-        function updateThemeButton() {
-            const themeBtn = document.getElementById('themeBtn');
-            const themeIcons = {
-                'light': '🌙',
-                'dark': '🌌',
-                'space': '🚀'
-            };
-            themeBtn.innerText = themeIcons[currentTheme];
-        }
-
-        document.getElementById('themeBtn').addEventListener('click', () => {
-            // Cycle through themes: light -> dark -> space -> light
-            const themes = ['light', 'dark', 'space'];
-            const currentIndex = themes.indexOf(currentTheme);
-            currentTheme = themes[(currentIndex + 1) % themes.length];
-            
+        themeBtn.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', currentTheme);
             localStorage.setItem('theme', currentTheme);
-            updateThemeButton();
+            themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
         });
     </script>
 </body>

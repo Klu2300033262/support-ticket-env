@@ -1,11 +1,11 @@
 ---
-title: Support Ticket Environment
+title: ticket-env
 emoji: 🎫
 colorFrom: blue
-colorTo: purple
+colorTo: indigo
 sdk: docker
 dockerfile: Dockerfile
-app_port: 7860
+app_port: 8000
 tags:
 - openenv
 - support-ticket
@@ -33,14 +33,6 @@ This environment simulates a real-world customer support ticket triage system wh
 - **Easy**: Billing Classification - Correctly identify billing-related issues
 - **Medium**: Urgent Sentiment Detection - Detect urgent/angry sentiment and assign high priority  
 - **Hard**: Escalation Logic - Determine when tickets require human escalation
-
-## 🌐 **Live Demo**
-
-**https://lasyasrivalli-ticket-env.hf.space**
-
-## 🚀 **Hugging Face Space**
-
-**https://huggingface.co/spaces/Lasyasrivalli/ticket-env**
 
 ## API Endpoints
 

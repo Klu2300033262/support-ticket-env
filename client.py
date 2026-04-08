@@ -12,7 +12,7 @@ from openenv.core import EnvClient
 from openenv.core.client_types import StepResult
 from openenv.core.env_server.types import State
 
-from .models import SupportTicketAction, SupportTicketObservation, SupportTicketState
+from models import SupportTicketAction, SupportTicketObservation, SupportTicketState
 
 
 class SupportTicketEnv(
@@ -70,7 +70,7 @@ class SupportTicketEnv(
         Returns:
             StepResult with SupportTicketObservation
         """
-        obs_data = payload.get("observation", {})
+        obs_data = payload.get("state", {})
         observation = SupportTicketObservation(
             category=obs_data.get("category", ""),
             priority=obs_data.get("priority", "Low"),

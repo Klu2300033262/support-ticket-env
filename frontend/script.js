@@ -12,34 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Switcher Logic
     let currentTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
-    updateThemeButton();
-
-    function updateThemeButton() {
-        const themeIcons = {
-            'light': '🌙',
-            'dark': '�',
-            'space': '🚀'
-        };
-        themeBtn.innerText = themeIcons[currentTheme];
-    }
+    themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
 
     themeBtn.addEventListener('click', () => {
-        // Cycle through themes: light -> dark -> space -> light
-        const themes = ['light', 'dark', 'space'];
-        const currentIndex = themes.indexOf(currentTheme);
-        currentTheme = themes[(currentIndex + 1) % themes.length];
-        
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
-        updateThemeButton();
-        
-        // Show toast notification for theme change
-        const themeNames = {
-            'light': 'Light Theme',
-            'dark': 'Dark Theme', 
-            'space': 'Space Theme'
-        };
-        showToast(`Switched to ${themeNames[currentTheme]}`, 'info');
+        themeBtn.innerText = currentTheme === 'light' ? '🌙' : '☀️';
     });
 
     // --- Analytics & Charts Logic ---
@@ -111,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function updateAnalytics() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/analytics');
+            const response = await fetch('/analytics');
             if (!response.ok) throw new Error('Failed to fetch analytics');
             const data = await response.json();
 
@@ -139,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchHistory() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/tickets');
+            const response = await fetch('/tickets');
             if (!response.ok) throw new Error('Failed to fetch history');
             const data = await response.json();
             tickets = data.tickets || [];
@@ -209,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/analyze-ticket', {
+            const response = await fetch('/analyze-ticket', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
